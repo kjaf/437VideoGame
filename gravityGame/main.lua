@@ -1,7 +1,7 @@
 -- Load some default values for our rectangle.
 function love.load()
     Astronaut = {}
-    Astronaut.image =  love.graphics.newImage("astronaut.png")
+    Astronaut.image =  love.graphics.newImage("images/astronaut.png")
 end
  
 -- Increase the size of the rectangle every frame.
