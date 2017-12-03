@@ -1,12 +1,14 @@
 -- Load some default values for our rectangle.
 function love.load()
     Astronaut = {}
+
     Astronaut.image =  love.graphics.newImage("astronaut.png")
     Astronaut.x = 100
     Astronaut.y = 100 
     angle = 0
     speed = 10
     astronautR = 0
+
 
 
 end
