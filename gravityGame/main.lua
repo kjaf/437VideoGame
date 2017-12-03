@@ -1,4 +1,4 @@
--- Load some default values for our rectangle.
+
 function love.load()
     Astronaut = {}
 
@@ -6,9 +6,10 @@ function love.load()
     Astronaut.x = 100
     Astronaut.y = 100 
     angle = 0
-    speed = 10
+    speed = 2
     astronautR = 0
     text = "nothing"
+  
 
 
     function love.keyreleased(key)
@@ -24,31 +25,29 @@ function love.load()
 
 end
  
--- Increase the size of the rectangle every frame.
+
 function love.update(dt)
 	if love.keyboard.isDown("right") then
-      astronautR = astronautR + .004
+      astronautR = astronautR + .01
   end
 
   	if love.keyboard.isDown("left") then
-      astronautR = astronautR + -.004
+      astronautR = astronautR + -.01
   end
 
 
-  if (love.keyboard.isDown("right") and love.keyboard.isDown("space")) then 
+  if (love.keyboard.isDown("space")) then 
   	Astronaut.image = love.graphics.newImage("/images/boosting.png")
+    Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
+    Astronaut.y = Astronaut.y + math.sin(astronautR) * speed 
   end
 
-  if (love.keyboard.isDown("left") and love.keyboard.isDown("space")) then 
-    Astronaut.image = love.graphics.newImage("/images/boosting.png")
-  end
+ 
 
 
  
- -- Astronaut.x = Astronaut.x + (math.cos(math.rad(angle)) * speed * dt)
- -- Astronaut.y = Astronaut.y + (math.cos(math.rad(angle)) * speed * dt)
- textx = Astronaut.x 
- texty = Astronaut.y
+
+ 
 
 	
 
@@ -56,9 +55,9 @@ function love.update(dt)
    
 end
  
--- Draw a coloured rectangle.
+
 function love.draw()
     love.graphics.draw(Astronaut.image, Astronaut.x, Astronaut.y,astronautR)
-    love.graphics.print(text, 300,300)
+    
     
 end
