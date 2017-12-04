@@ -4,6 +4,7 @@ function love.load()
     Planets = {}
     force = 0 
 
+
     for i = 1, 3 do
       Planets[i] = {}
     end
@@ -36,6 +37,7 @@ function love.load()
     speed = 2
     astronautR = 0
     text = "nothing"
+    text1 = "nothing"
 
 
     planet = {}
@@ -65,10 +67,16 @@ function love.load()
 
 
     function angleTo(Planets)
-      local diffX = Planets.x - Astronaut.x
-      local diffy = Planets.y - Astronaut.y
 
-      local radians = math.atan(diffy,diffx)
+
+
+
+      local diffx = Planets.x - Astronaut.x
+      local diffy =  Planets.y - Astronaut.y
+
+        
+      local radians = math.atan2(diffy,diffx)
+      -- text = radians
       return radians
     end
     
@@ -84,15 +92,26 @@ function love.load()
 
 
     function addVector(thrust, radian)
-      text = radian
-      Astronaut.x = Astronaut.x + math.cos(radian) * .5
-      Astronaut.y = Astronaut.y + math.sin(radian) * .5
+      -- text = radian
+      -- Astronaut.x = Astronaut.x + math.cos(radian) * .5
+      -- Astronaut.y = Astronaut.y + math.sin(radian) * .5
+
+
+      local newDX = math.cos(radian)
+      local newDY = math.sin(radian)
+      text1 = radian
+      text = newDY
+      Astronaut.x = Astronaut.x + math.cos(radian) * thrust
+      Astronaut.y = Astronaut.y + math.sin(radian) * thrust
     end 
 
     function calcSpeedAngle()
       Astronaut.speed = math.sqrt((Astronaut.dx*Astronaut.dx) +(Astronaut.dy*Astronaut.dy))
       text = Astronaut.speed
     end
+
+
+
 
 
 
@@ -147,6 +166,7 @@ function love.draw()
     love.graphics.draw(Astronaut.image, Astronaut.x, Astronaut.y,astronautR,.75,.75)
     love.graphics.draw(Planets[1].image, Planets[1].x, Planets[1].y,0,5,5)
     love.graphics.print(text, 300,300)
+    love.graphics.print(text1, 310,310)
     
     
 end
