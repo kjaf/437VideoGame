@@ -11,6 +11,7 @@ function love.load()
   	pickup = love.audio.newSource("sounds/pickup.wav")
   	ship = love.audio.newSource("sounds/ship.mp3")
   	death = love.audio.newSource("sounds/death.wav")
+  	victory = love.audio.newSource("sounds/victory.wav")
 	background = love.graphics.newImage("images/space.png")
 	background = love.graphics.newImage("images/space.png")
 	Asteroids = {}
@@ -18,6 +19,8 @@ function love.load()
 	Friends = {}
 	Fuel = {}
     score = 60
+    timer = 10
+    level = 1
 	saved = 0
     force = 0 
     gravityConstant = .3
@@ -291,6 +294,8 @@ function love.load()
 	end
 	
 	function die()
+	  level = 3
+	  timer = 10
 	  hide(Astronaut)
 	  FuelGauge.amount = 0
 	end
@@ -302,6 +307,7 @@ function love.load()
 	
 	function collectFriend(friend)
 		hide(friend)
+		score = score + 100
 		saved = saved + 1
 	end
 	
@@ -346,14 +352,18 @@ function love.load()
 	function checkCollisions()
 		for i in pairs(Planets) do
 			if isColliding(Astronaut, .6, Planets[i], 1.5) then
-				death:play()
+				if level == 1 then
+					death:play()
+				end
 				die()
 			end
 		end
 		
 		for j in pairs(Asteroids) do
 			if isColliding(Astronaut, .6, Asteroids[j], .75) then
-				death:play() 
+				if level == 1 then
+					death:play()
+				end 
 				die()
 			end
 		end
@@ -373,8 +383,11 @@ function love.load()
 		end
 		
 		if isColliding(Astronaut, .6, Ship, 1) then
-			text = "VICTORY"
+			love.audio.stop(menuMusic)
+			level = 2
+			timer = 10
 			hide(Astronaut)
+			hiScore = math.ceil(score)
 			FuelGauge.amount = 0
 		end
 		
@@ -420,6 +433,7 @@ end
 function love.update(dt)
   --score goes down every update (every second)
   score = score - dt
+  timer = timer - dt
   intScore = math.ceil(score)
   --if score is <= 0, stay at 0
   if intScore <= 0 then
@@ -464,36 +478,63 @@ function love.draw()
   end
 
   if startGame then
-  	love.audio.stop(menuMusic)
-  	love.audio.stop(menuSound)
-  	gameMusic:setVolume(0.25)
-  	gameMusic:setPitch(0.7)
-  	gameMusic:play()
-  	love.graphics.draw(background, 0, 0, 0, .6, .6)
-  	love.graphics.draw(FuelGauge.image, Fuel.x, Fuel.y)
-  	love.graphics.draw(Astronaut.image, Astronaut.x, Astronaut.y,astronautR,.6,.6)
-	love.graphics.draw(Ship.image, Ship.x, Ship.y)  
-  	
-  	for i in pairs(Asteroids) do
-  		love.graphics.draw(Asteroids[i].image, Asteroids[i].x, Asteroids[i].y,0,.75,.75)
-  	end
-  		
-  	for j in pairs(Planets) do
-  		love.graphics.draw(Planets[j].image, Planets[j].x, Planets[j].y,0,Planets[j].scale,Planets[j].scale)
-  	end
-	
-	for k in pairs(Friends) do
-		love.graphics.draw(Friends[k].image, Friends[k].x, Friends[k].y,0,.6,.6)
+  	if level == 1 then
+	  	love.audio.stop(menuMusic)
+	  	love.audio.stop(menuSound)
+	  	gameMusic:setVolume(0.25)
+	  	gameMusic:setPitch(0.7)
+	  	gameMusic:play()
+	  	love.graphics.draw(background, 0, 0, 0, .6, .6)
+	  	love.graphics.draw(FuelGauge.image, Fuel.x, Fuel.y)
+	  	love.graphics.draw(Astronaut.image, Astronaut.x, Astronaut.y,astronautR,.6,.6)
+		love.graphics.draw(Ship.image, Ship.x, Ship.y)  
+	  	
+	  	for i in pairs(Asteroids) do
+	  		love.graphics.draw(Asteroids[i].image, Asteroids[i].x, Asteroids[i].y,0,.75,.75)
+	  	end
+	  		
+	  	for j in pairs(Planets) do
+	  		love.graphics.draw(Planets[j].image, Planets[j].x, Planets[j].y,0,Planets[j].scale,Planets[j].scale)
+	  	end
+		
+		for k in pairs(Friends) do
+			love.graphics.draw(Friends[k].image, Friends[k].x, Friends[k].y,0,.6,.6)
+		end
+		
+		for l in pairs(Fuel) do
+			love.graphics.draw(Fuel[l].image, Fuel[l].x, Fuel[l].y,0,1,1)
+		end
+	  	
+	    love.graphics.print(text, 300,300)
+	  	love.graphics.print(text1, 350, 350)
+	    love.graphics.print('Score: ', 670, 10, 0, 2, 2)
+	    love.graphics.print(intScore, 760, 10, 0, 2, 2)
+	elseif level == 2 then
+		love.graphics.clear()
+		love.audio.stop(menuMusic)
+	  	love.audio.stop(menuSound)
+	  	love.audio.stop(gameMusic)
+	  	victory:play()
+		love.graphics.draw(background, 0, 0, 0, .6, .6)
+		love.graphics.print("Congrats you won!\nRestarting in 10 seconds", 320, 250)
+		love.graphics.print("Score: ", 320, 280)
+		love.graphics.print(hiScore, 360, 280)
+		if timer <= 0 then
+			love.event.quit('restart')
+		end
+	elseif level ==3 then
+		love.graphics.clear()
+		love.audio.stop(menuMusic)
+	  	love.audio.stop(menuSound)
+	  	love.audio.stop(gameMusic)
+		love.graphics.draw(background, 0, 0, 0, .6, .6)
+		love.graphics.print("Oh no you lost!\nRestarting in 10 seconds", 320, 250)
+		love.graphics.print("Score: 0", 320, 290)
+		if timer <= 0 then
+			love.event.quit('restart')
+		end
 	end
-	
-	for l in pairs(Fuel) do
-		love.graphics.draw(Fuel[l].image, Fuel[l].x, Fuel[l].y,0,1,1)
-	end
-  	
-    love.graphics.print(text, 300,300)
-  	love.graphics.print(text1, 350, 350)
-    love.graphics.print('Score: ', 670, 10, 0, 2, 2)
-    love.graphics.print(intScore, 760, 10, 0, 2, 2)
+
 
   end
     
