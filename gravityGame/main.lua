@@ -270,9 +270,12 @@ function love.update(dt)
   -- angle = angleTo(Planets[1])
 
   -- addVector(force, angle)
-
-  checkGravity(Planets[1])
-  astronautUpdate()
+if(love.keyboard.isDown("space") ~= true) then
+	for i in pairs(Planets) do 
+  		checkGravity(Planets[i])
+ 	end
+  	astronautUpdate()
+end
    
 end
  
