@@ -410,8 +410,9 @@ if(love.keyboard.isDown("space") ~= true) then
 	for i in pairs(Planets) do 
   		checkGravity(Planets[i])
  	end
-
-  	astronautUpdate()
+ 	if(startGame) then
+  		astronautUpdate()
+  	end
 end
 
 
