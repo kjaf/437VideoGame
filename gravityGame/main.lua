@@ -97,16 +97,17 @@ function love.load()
 
 
     function angleTo(Planets)
-      local diffx = Astronaut.x - Planets.x
-      local diffy = Astronaut.y - Planets.y
+      -- local diffx = Astronaut.x - Planets.x
+      -- local diffy = Astronaut.y - Planets.y
      
 
         
-      local radians = math.atan2(diffy,diffx)
-      local degrees = radians * 180 /math.pi
+      -- local radians = math.atan2(diffy,diffx)
+      -- local degrees = radians * 180 /math.pi
     
       -- text = radians
-      return degrees
+      -- return degrees
+      return math.deg(math.atan2(Planets.y-Astronaut.y,Planets.x-Astronaut.x)) + 90
     end
     
 
@@ -128,6 +129,12 @@ function love.load()
 
       Astronaut.dx = Astronaut.dx + newDX
       Astronaut.dy = Astronaut.dy + newDY
+
+      -- local x = Astronaut.x + (math.sin(math.rad(degrees)))
+      -- local y = Astronaut.y + (math.cos(math.rad(degrees)))
+
+      -- Astronaut.dx = Astronaut.dx + x 
+      -- Astronaut.dy = Astronaut.dy + y 
       
       calcSpeedAngle()
     end 
