@@ -74,6 +74,18 @@ function love.load()
 		Fuel.amount = amount
 		return Fuel
 	end
+	
+	function createParticles()
+		for i = 1, 10 do
+			Particles[i] = {}
+			Particles[i].image = love.graphics.newImage("/images/player/bits.png")
+			Particles[i].x = Astronaut.x
+			Particles[i].y = Astronaut.y
+			Particles[i].dx = -Astronaut.dx
+			Particles[i].dy = -Astronaut.dy
+		end
+		return Particles
+	end
 		
 	
 	Astronaut = createAstronaut()
@@ -152,6 +164,11 @@ function love.load()
 	function die()
 	  Astronaut.x = 1000
 	  Astronaut.y = 1000
+	  Particles = {}
+	  Particles = createParticles()
+	  for k in pairs(Particles) do
+	     love.graphics.draw(Particles[k].image, Particles[k].x, Particles[k].y, 0, 1, 1)
+      end
 	end
 	
 	function checkKeys()
@@ -213,18 +230,16 @@ function love.load()
 		end
 	end
 
-
-	function isColliding(spriteA, spriteB)
-		text = spriteA.x
-		text1 = spriteB.x
+	
+	function isColliding(spriteA, scaleA, spriteB, scaleB)
 		aLeft = spriteA.x
-		aRight = spriteA.x + spriteA.width * .6
+		aRight = spriteA.x + spriteA.width * scaleA
 		aTop = spriteA.y
-		aBottom = spriteA.y + spriteA.height * .6
+		aBottom = spriteA.y + spriteA.height * scaleA
 		bLeft = spriteB.x
-		bRight = spriteB.x + spriteB.width * 2
+		bRight = spriteB.x + spriteB.width * scaleB
 		bTop = spriteB.y
-		bBottom = spriteB.y + spriteB.height * 2
+		bBottom = spriteB.y + spriteB.height * scaleB
 		
 		collision = true
 		if aBottom < bTop or
@@ -238,13 +253,13 @@ function love.load()
 				
 	function checkCollisions()
 		for i in pairs(Planets) do
-			if isColliding(Astronaut, Planets[i]) then
+			if isColliding(Astronaut, .6, Planets[i], 1.5) then
 				die()
 			end
 		end
 		
 		for j in pairs(Asteroids) do
-			if isColliding(Astronaut, Asteroids[j]) then 
+			if isColliding(Astronaut, .6, Asteroids[j], .75) then 
 				die()
 			end
 		end
