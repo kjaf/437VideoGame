@@ -5,10 +5,11 @@ function love.load()
     Planets = {}
     score = 60
     force = 0 
-    gravityConstant = .05
+    gravityConstant = .3
 	angle = 0
     speed = 2
     astronautR = 0
+    
     text = "nothing"
     text1 = "nothing"
 
@@ -32,7 +33,7 @@ function love.load()
 		Astronaut.dx = 0
 		Astronaut.dy = 0 
 		Astronaut.speed = 0
-		Astronaut.moveAngle = 0
+		Astronaut.moveAngle = 0 
 		return Astronaut
 	end
 	
@@ -61,6 +62,8 @@ function love.load()
 				Asteroids[j].x = Planets[i].x + math.random(-100, 100)
 				Asteroids[j].y = Planets[i].y + math.random(60, 100)
 				Asteroids[j].mass = 1000
+				Asteroids[j].angle = 0
+				Asteroids[j].radius = .08
 			end
 		end
 		return Asteroids
@@ -159,6 +162,25 @@ function love.load()
     function astronautUpdate()
       Astronaut.x = Astronaut.x + Astronaut.dx 
       Astronaut.y = Astronaut.y + Astronaut.dy
+    end
+
+    function asteroidUpdate(asteriod, planet)
+    	-- asteriod.angle = asteriod.angle + 90
+    	-- local angle = asteriod.angle * math.pi/180
+    	-- text = angle
+    	-- local newDX = math.cos(angle)
+    	-- local newDy = math.sin(angle)
+    	-- asteriod.x = asteriod.x + newDX    	
+    	-- asteriod.y = asteriod.y + newDY
+    	asteriod.angle = asteriod.angle + .05
+    	if asteriod.angle >= 360 then 
+    		asteriod.angle = 0
+    	end 
+    	
+    	dx = asteriod.radius * math.deg(math.sin(asteriod.angle))
+    	dy = asteriod.radius * math.deg(math.cos(asteriod.angle))
+    	asteriod.x = asteriod.x +  dx 
+    	asteriod.y = asteriod.y + dy 
     end
 	
 	function die()
@@ -291,6 +313,8 @@ if(love.keyboard.isDown("space") ~= true) then
  	end
   	astronautUpdate()
 end
+
+asteroidUpdate(Asteroids[1], Planets[1])
    
 end
  
