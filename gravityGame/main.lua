@@ -1,5 +1,9 @@
 
+Menu = require 'menu'
+
 function love.load()
+  startGame = false
+  menuScreen = true
 	background = love.graphics.newImage("images/space.png")
 	Asteroids = {}
     Planets = {}
@@ -12,6 +16,29 @@ function love.load()
     
     text = "nothing"
     text1 = "nothing"
+
+    --MENU--
+    menu = Menu.new()
+      menu:addItem{
+        name = 'Start Game',
+        action = function()
+          startGame = true
+          menuScreen = false
+        end
+      }
+      menu:addItem{
+        name = 'Quit',
+        action = function()
+          love.event.push('quit')
+        end
+      }
+    --MENU--
+
+    --MENU KEY PRESS--
+    function love.keypressed(key)
+      menu:keypressed(key)
+    end
+    --MENU KEY PRESS--
 
     function love.keyreleased(key)
       if key == "space" then
@@ -300,6 +327,7 @@ function love.update(dt)
      intScore = 0
   end
 
+  menu:update(dt)
   checkCollisions()
   checkKeys()
 
@@ -320,22 +348,29 @@ end
  
 
 function love.draw()
-	love.graphics.draw(background, 0, 0, 0, .6, .6)
-	love.graphics.draw(Fuel.image, Fuel.x, Fuel.y)
-	love.graphics.draw(Astronaut.image, Astronaut.x, Astronaut.y,astronautR,.6,.6)
-	
-	for i in pairs(Asteroids) do
-		love.graphics.draw(Asteroids[i].image, Asteroids[i].x, Asteroids[i].y,0,.75,.75)
-	end
-		
-	for j in pairs(Planets) do
-		love.graphics.draw(Planets[j].image, Planets[j].x, Planets[j].y,0,2.5,2.5)
-	end
-	
-    love.graphics.print(text, 300,300)
-	love.graphics.print(text1, 350, 350)
-    love.graphics.print('Score: ', 670, 10, 0, 2, 2)
-    love.graphics.print(intScore, 760, 10, 0, 2, 2)  
+  if menuScreen then
+    love.graphics.draw(background, 0, 0, 0, .6, .6)
+    menu:draw(10, 10)
+  end
+
+  if startGame then
+  	love.graphics.draw(background, 0, 0, 0, .6, .6)
+  	love.graphics.draw(Fuel.image, Fuel.x, Fuel.y)
+  	love.graphics.draw(Astronaut.image, Astronaut.x, Astronaut.y,astronautR,.6,.6)
+  	
+  	for i in pairs(Asteroids) do
+  		love.graphics.draw(Asteroids[i].image, Asteroids[i].x, Asteroids[i].y,0,.75,.75)
+  	end
+  		
+  	for j in pairs(Planets) do
+  		love.graphics.draw(Planets[j].image, Planets[j].x, Planets[j].y,0,2.5,2.5)
+  	end
+  	
+      love.graphics.print(text, 300,300)
+  	love.graphics.print(text1, 350, 350)
+      love.graphics.print('Score: ', 670, 10, 0, 2, 2)
+      love.graphics.print(intScore, 760, 10, 0, 2, 2)  
+  end
     
     
 end
