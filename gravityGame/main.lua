@@ -37,7 +37,8 @@ function love.load()
 		Astronaut.mass = 1
 		Astronaut.dx = 0
 		Astronaut.dy = 0 
-		Astronaut.speed = 0 
+		Astronaut.speed = 0
+    Astronaut.moveAngle = 0
 		return Astronaut
 	end
 	
@@ -47,7 +48,7 @@ function love.load()
 			Planets[i] = {}
 			Planets[i].x = love.math.random(100, love.graphics.getWidth() - 100)
 			Planets[i].y = love.math.random(100, love.graphics.getHeight() - 100)
-			Planets[i].mass = 2000
+			Planets[i].mass = 1000
 			Planets[i].image = love.graphics.newImage("/images/planets/planet" .. love.math.random(1, 3) .. ".png")
 		end
 		
@@ -68,15 +69,17 @@ function love.load()
 	end
 	
 	Astronaut = createAstronaut()
-	Planets = createPlanets(2)
+	Planets = createPlanets(1)
 	createAsteroids(Planets, 2)
 
 
-    function checkGravity(planetMass)
-      local dist = checkDistance()
-      --local dir = angleTo(Planets[1])
-      local force = ((planetMass * Astronaut.mass) / (dist * dist))
-      return force
+    function checkGravity(planet)
+
+      local dist = checkDistance(planet)
+      local dir = angleTo(planet)
+      local force = ((planet.mass * Astronaut.mass) / (dist * dist))
+      addVector(dir, force)
+      -- return force
       -- Astronaut.x = Astronaut.x + math.cos(astronautR) * force
       -- Astronaut.y = Astronaut.y + math.sin(astronautR) * force
 
@@ -84,43 +87,49 @@ function love.load()
 
 
     function angleTo(Planets)
-      local diffx = Planets.x - Astronaut.x
-      local diffy =  Planets.y - Astronaut.y
+      local diffx = Astronaut.x - Planets.x
+      local diffy = Astronaut.y - Planets.y
+     
 
         
       local radians = math.atan2(diffy,diffx)
+      local degrees = radians * 180 /math.pi
+    
       -- text = radians
-      return radians
+      return degrees
     end
     
 
 
-    function checkDistance()
-      local dx = Astronaut.x - Planets[1].x
-      local dy = Astronaut.y - Planets[1].y
+    function checkDistance(planet)
+      local dx = planet.x - Astronaut.x
+      local dy = planet.y - Astronaut.y
       local distance =  math.sqrt(dx * dx + dy * dy)
        -- local angle = angleTo(Planets[1])
       return distance
     end
 
 
-    function addVector(thrust, radian)
-      -- text = radian
-      -- Astronaut.x = Astronaut.x + math.cos(radian) * .5
-      -- Astronaut.y = Astronaut.y + math.sin(radian) * .5
+    function addVector(degrees, thrust)
+      degrees = degrees - 90
+      angle = degrees * math.pi/180
+      newDX = thrust * math.cos(angle)
+      newDY = thrust * math.sin(angle)
 
-
-      local newDX = math.cos(radian)
-      local newDY = math.sin(radian)
-      text1 = radian
-      text = newDY
-      Astronaut.x = Astronaut.x + math.cos(radian) * thrust
-      Astronaut.y = Astronaut.y + math.sin(radian) * thrust
+      Astronaut.dx = Astronaut.dx + newDX
+      Astronaut.dy = Astronaut.dy + newDY
+      
+      calcSpeedAngle()
     end 
 
     function calcSpeedAngle()
       Astronaut.speed = math.sqrt((Astronaut.dx*Astronaut.dx) +(Astronaut.dy*Astronaut.dy))
-      text = Astronaut.speed
+      Astronaut.moveAngle = math.atan2(Astronaut.dy, Astronaut.dx)
+    end
+
+    function astronautUpdate()
+      Astronaut.x = Astronaut.x + Astronaut.dx 
+      Astronaut.y = Astronaut.y + Astronaut.dy
     end
 
 
@@ -193,10 +202,13 @@ function love.update(dt)
     end 
   end
 
-  force = checkGravity(Planets[1].mass)
-  angle = angleTo(Planets[1])
+  -- force = checkGravity(Planets[1].mass)
+  -- angle = angleTo(Planets[1])
 
-  addVector(force, angle)
+  -- addVector(force, angle)
+
+  checkGravity(Planets[1])
+  astronautUpdate()
    
 end
  
