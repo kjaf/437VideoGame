@@ -120,7 +120,7 @@ function love.load()
 				Asteroids[j].y = Planets[i].y + love.math.random(60, 100)
 				Asteroids[j].mass = 1000
 				Asteroids[j].angle = 0
-				Asteroids[j].radius = .08
+				Asteroids[j].radius = 2
 			end
 		end
 		return Asteroids
@@ -251,23 +251,38 @@ function love.load()
       Astronaut.y = Astronaut.y + Astronaut.dy
     end
 
-    function asteroidUpdate(asteroid, planet)
-    	-- asteriod.angle = asteriod.angle + 90
-    	-- local angle = asteriod.angle * math.pi/180
-    	-- text = angle
-    	-- local newDX = math.cos(angle)
-    	-- local newDy = math.sin(angle)
-    	-- asteriod.x = asteriod.x + newDX    	
-    	-- asteriod.y = asteriod.y + newDY
-    	asteroid.angle = asteroid.angle + .05
+    function asteroidUpdate(asteroid, planet, dt)
+    	asteroid.angle = asteroid.angle + .05 
     	if asteroid.angle >= 360 then 
     		asteroid.angle = 0
     	end 
-    	
+
     	dx = asteroid.radius * math.deg(math.sin(asteroid.angle))
     	dy = asteroid.radius * math.deg(math.cos(asteroid.angle))
-    	asteroid.x = asteroid.x +  dx 
-    	asteroid.y = asteroid.y + dy 
+    	asteroid.x = planet.x + dx 
+    	asteroid.y = planet.y + dy
+
+    	-- text = planet.x
+    	-- -- asteriod.angle = asteriod.angle + 90
+    	-- -- local angle = asteriod.angle * math.pi/180
+    	-- -- text = angle
+    	-- -- local newDX = math.cos(angle)
+    	-- -- local newDy = math.sin(angle)
+    	-- -- asteriod.x = asteriod.x + newDX    	
+    	-- -- asteriod.y = asteriod.y + newDY
+    	-- asteroid.angle = asteroid.angle + 20 * dt
+    	-- -- if asteroid.angle >= 360 then 
+    	-- -- 	asteroid.angle = 0
+    	-- -- end 
+    	-- local new_x = planet.x + math.deg(math.sin(angle)) 
+    	-- local new_y = planet.y + math.deg(math.cos(angle))
+
+    	-- asteroid.x = new_x 
+    	-- asteroid.y = new_y
+    	-- dx = asteroid.radius * math.deg(math.sin(asteroid.angle))
+    	-- dy = asteroid.radius * math.deg(math.cos(asteroid.angle))
+    	-- asteroid.x = asteroid.x +  dx 
+    	-- asteroid.y = asteroid.y + dy 
     end
 	
 	function hide(sprite)
@@ -431,7 +446,7 @@ function love.update(dt)
 
 
 for i in pairs(Asteroids) do 
-	asteroidUpdate(Asteroids[i])
+	asteroidUpdate(Asteroids[i], Planets[i], dt)
 end
    
 end
