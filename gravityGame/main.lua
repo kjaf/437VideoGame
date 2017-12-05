@@ -2,8 +2,10 @@
 Menu = require 'menu'
 
 function love.load()
-  startGame = false
-  menuScreen = true
+    startGame = false
+    menuScreen = true
+    instructionPage = false
+  	music = love.audio.newSource("sounds/menu.wav")
 	background = love.graphics.newImage("images/space.png")
 	Asteroids = {}
     Planets = {}
@@ -19,37 +21,46 @@ function love.load()
     text = "nothing"
     text1 = "nothing"
 
+    instructions = "Welcome to Gravity!\nYou're an astronaut who has been stranded in space!!\nYou must get back to your ship using a limited amount of fuel.\nUse the planet's orbits to help get you back to your ship!\nAlong the way, be sure to pick up your fellow astronauts!"
+
     --MENU--
     menu = Menu.new()
-      menu:addItem{
-        name = 'Start Game',
-        action = function()
-          startGame = true
-          menuScreen = false
-        end
-      }
-      menu:addItem{
-        name = 'Quit',
-        action = function()
-          love.event.push('quit')
-        end
-      }
+        menu:addItem{
+        	name = 'Start Game',
+        	action = function()
+          		startGame = true
+          		menuScreen = false
+        	end
+    	}
+    	menu:addItem{
+        	name = 'Instructions',
+        	action = function()
+        		instructionPage = true
+        	end
+      	}
+      	menu:addItem{
+        	name = 'Quit',
+        	action = function()
+          		love.event.push('quit')
+        	end
+      	}
     --MENU--
 
     --MENU KEY PRESS--
     function love.keypressed(key)
-      menu:keypressed(key)
+    	menu:keypressed(key)
     end
     --MENU KEY PRESS--
 
     function love.keyreleased(key)
-      if key == "space" then
-        Astronaut.image = love.graphics.newImage("/images/player/astronaut.png")
-      end
+     	if key == "space" then
+        	Astronaut.image = love.graphics.newImage("/images/player/astronaut.png")
+      	end
     end
 
 
     love.window.setMode(800,600)
+    love.window.setTitle('Gravity')
 	
     function createAstronaut()
 		Astronaut = {}
@@ -405,11 +416,18 @@ end
 
 function love.draw()
   if menuScreen then
-    love.graphics.draw(background, 0, 0, 0, .6, .6)
-    menu:draw(10, 10)
+  	music:play()
+   	love.graphics.draw(background, 0, 0, 0, .6, .6)
+    menu:draw(320, 250)
+  end
+
+  if instructionPage then
+  	love.graphics.printf(instructions, 170,110, 400, "center")
   end
 
   if startGame then
+  	love.audio.stop(music)
+  	love.audio.stop(sound)
   	love.graphics.draw(background, 0, 0, 0, .6, .6)
   	love.graphics.draw(FuelGauge.image, Fuel.x, Fuel.y)
   	love.graphics.draw(Astronaut.image, Astronaut.x, Astronaut.y,astronautR,.6,.6)

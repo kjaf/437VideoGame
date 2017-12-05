@@ -1,3 +1,4 @@
+sound = love.audio.newSource("sounds/menuSelect.wav", "static")
 return {
 	new = function()
 		return {
@@ -12,7 +13,7 @@ return {
 			end,
 			draw = function(self, x, y)
 				local height = 20
-				local width = 300
+				local width = 150
 				
 				love.graphics.setColor(255, 255, 255, 128)
 				love.graphics.rectangle('fill', x, y + height*(self.selected-1) + (self.animOffset * height), width, height)
@@ -29,17 +30,21 @@ return {
 			keypressed = function(self, key)
 				if key == 'up' then
 					if self.selected > 1 then
+						sound:play()
 						self.selected = self.selected - 1
 						self.animOffset = self.animOffset + 1
 					else
+						sound:play()
 						self.selected = #self.items
 						self.animOffset = self.animOffset - (#self.items-1)
 					end
 				elseif key == 'down' then
 					if self.selected < #self.items then
+						sound:play()
 						self.selected = self.selected + 1
 						self.animOffset = self.animOffset - 1
 					else
+						sound:play()
 						self.selected = 1
 						self.animOffset = self.animOffset + (#self.items-1)
 					end
