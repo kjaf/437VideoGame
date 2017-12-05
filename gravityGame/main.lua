@@ -81,11 +81,11 @@ function love.load()
 	function createPlanets(numPlanets)
 		for i = 1, numPlanets do
 			Planets[i] = {}
-			Planets[i].image = love.graphics.newImage("/images/planets/planet" .. math.random(1, 3) .. ".png")
+			Planets[i].image = love.graphics.newImage("/images/planets/planet" .. love.math.random(1, 3) .. ".png")
 			Planets[i].width = Planets[i].image:getWidth()
 			Planets[i].height = Planets[i].image:getHeight()
-			Planets[i].x = math.random(100, love.graphics.getWidth() - 200)
-			Planets[i].y = math.random(100, love.graphics.getHeight() - 200)
+			Planets[i].x = love.math.random(100, love.graphics.getWidth() - 200)
+			Planets[i].y = love.math.random(100, love.graphics.getHeight() - 200)
 			Planets[i].mass = 2000
 		end
 		
@@ -96,11 +96,11 @@ function love.load()
 		for i in pairs(planets) do
 			for j = 1, love.math.random(1, maximum) do
 				Asteroids[j] = {}
-				Asteroids[j].image = love.graphics.newImage("/images/planets/asteroid" .. math.random(1, 3) .. ".png")
+				Asteroids[j].image = love.graphics.newImage("/images/planets/asteroid" .. love.math.random(1, 3) .. ".png")
 				Asteroids[j].width = Asteroids[j].image:getWidth()
 				Asteroids[j].height = Asteroids[j].image:getHeight()
-				Asteroids[j].x = Planets[i].x + math.random(-100, 100)
-				Asteroids[j].y = Planets[i].y + math.random(60, 100)
+				Asteroids[j].x = Planets[i].x + love.math.random(-100, 100)
+				Asteroids[j].y = Planets[i].y + love.math.random(60, 100)
 				Asteroids[j].mass = 1000
 				Asteroids[j].angle = 0
 				Asteroids[j].radius = .08
@@ -114,8 +114,8 @@ function love.load()
 		Ship.image =  love.graphics.newImage("/images/player/ship.png")
 		Ship.width = Ship.image:getWidth()
 		Ship.height = Ship.image:getHeight()
-		Ship.x = math.random(600, love.graphics.getWidth()-100)
-    	Ship.y = math.random(400, love.graphics.getHeight()-100)
+		Ship.x = love.math.random(600, love.graphics.getWidth()-100)
+    	Ship.y = love.math.random(400, love.graphics.getHeight()-100)
 		Ship.mass = 1
 		Ship.speed = 0
 		return Ship
@@ -127,8 +127,8 @@ function love.load()
 			Friends[i].image = love.graphics.newImage("/images/player/astronaut2.png")
 			Friends[i].width = Friends[i].image:getWidth()
 			Friends[i].height = Friends[i].image:getHeight()
-			Friends[i].x = math.random(100, love.graphics.getWidth() - 100)
-			Friends[i].y = math.random(100, love.graphics.getHeight() - 100)
+			Friends[i].x = love.math.random(100, love.graphics.getWidth() - 100)
+			Friends[i].y = love.math.random(100, love.graphics.getHeight() - 100)
 			Friends[i].mass = 1
 		end
 		return Friends
@@ -140,9 +140,9 @@ function love.load()
 			Fuel[i].image = love.graphics.newImage("/images/player/fuel.png")
 			Fuel[i].width = Fuel[i].image:getWidth()
 			Fuel[i].height = Fuel[i].image:getHeight()
-			Fuel[i].x = math.random(100, love.graphics.getWidth() - 100)
+			Fuel[i].x = love.math.random(100, love.graphics.getWidth() - 100)
 			text = Fuel[i].x
-			Fuel[i].y = math.random(100, love.graphics.getHeight() - 100)
+			Fuel[i].y = love.math.random(100, love.graphics.getHeight() - 100)
 			Fuel[i].mass = 1
 		end
 		return Fuel
@@ -254,20 +254,20 @@ function love.load()
     end
 	
 	function die()
-	  Astronaut.x = 1000
-	  Astronaut.y = 1000
+	  Astronaut.x = 5000
+	  Astronaut.y = 5000
 	  FuelGauge.amount = 0
 	end
 	
 	function collectFuel(fuel)
-		fuel.x = 1000
-		fuel.y = 1000
+		fuel.x = 5000
+		fuel.y = 5000
 		FuelGauge.amount = 100
 	end
 	
 	function collectFriend(friend)
-		friend.x = 1000
-		friend.y = 1000
+		friend.x = 5000
+		friend.y = 5000
 		saved = saved + 1
 	end
 	
@@ -375,6 +375,14 @@ function love.load()
 				collectFuel(Fuel[l])
 			end
 		end
+		
+		if isColliding(Astronaut, .6, Ship, 1) then
+			text = "VICTORY"
+			Astronaut.x = 5000
+			Astronaut.y = 5000
+			FuelGauge.amount = 0
+		end
+		
 	end
 
 
