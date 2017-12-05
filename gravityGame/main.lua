@@ -5,8 +5,8 @@ function love.load()
     Planets = {}
     score = 60
     force = 0 
-
-	  angle = 0
+    gravityConstant = .05
+	angle = 0
     speed = 2
     astronautR = 0
     text = "nothing"
@@ -87,7 +87,7 @@ function love.load()
 
       local dist = checkDistance(planet)
       local dir = angleTo(planet)
-      local force = ((planet.mass * Astronaut.mass) / (dist * dist))
+      local force = ((planet.mass * Astronaut.mass) / (dist * dist)) * gravityConstant
       addVector(dir, force)
       -- return force
       -- Astronaut.x = Astronaut.x + math.cos(astronautR) * force
