@@ -1,11 +1,17 @@
-
 Menu = require 'menu'
 
 function love.load()
     startGame = false
     menuScreen = true
     instructionPage = false
-  	music = love.audio.newSource("sounds/menu.wav")
+  	menuMusic = love.audio.newSource("sounds/menu.wav")
+  	gameMusic = love.audio.newSource("sounds/backgroundMusic.wav")
+  	jetpackNoise = love.audio.newSource("sounds/jetpack.wav")
+  	fuelpack = love.audio.newSource("sounds/fuelpack.wav")
+  	pickup = love.audio.newSource("sounds/pickup.wav")
+  	ship = love.audio.newSource("sounds/ship.mp3")
+  	death = love.audio.newSource("sounds/death.wav")
+	background = love.graphics.newImage("images/space.png")
 	background = love.graphics.newImage("images/space.png")
 	Asteroids = {}
     Planets = {}
@@ -54,6 +60,7 @@ function love.load()
 
     function love.keyreleased(key)
      	if key == "space" then
+     		love.audio.stop(jetpackNoise)
         	Astronaut.image = love.graphics.newImage("/images/player/astronaut.png")
       	end
     end
@@ -291,45 +298,56 @@ function love.load()
 		end
 
 		if (love.keyboard.isDown("space")) then 
+			jetpackNoise:setVolume(.2)
 			FuelGauge.amount = FuelGauge.amount - .25
 			Astronaut.image = love.graphics.newImage("/images/player/boosting.png")  
 			if FuelGauge.amount <= 100 and FuelGauge.amount > 90 then
+				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel100.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed     
 			elseif FuelGauge.amount <= 90 and FuelGauge.amount > 80 then
+				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel90.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed    
 			elseif FuelGauge.amount <= 80 and FuelGauge.amount > 70 then
+				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel80.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed    
 			elseif FuelGauge.amount <= 70 and FuelGauge.amount > 60 then
+				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel70.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed    
 			elseif FuelGauge.amount <= 60 and FuelGauge.amount > 50 then
+				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel60.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed       
 			elseif FuelGauge.amount <= 50 and FuelGauge.amount > 40 then
+				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel50.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed       
 			elseif FuelGauge.amount <= 40 and FuelGauge.amount > 30 then
+				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel40.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed       
 			elseif FuelGauge.amount <= 30 and FuelGauge.amount > 20 then
+				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel30.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed     
 			elseif FuelGauge.amount <= 20 and FuelGauge.amount > 10 then
+				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel20.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed    
 			elseif FuelGauge.amount <= 10 and FuelGauge.amount > 0 then
+				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel10.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed      
@@ -364,24 +382,28 @@ function love.load()
 	function checkCollisions()
 		for i in pairs(Planets) do
 			if isColliding(Astronaut, .6, Planets[i], 1.5) then
+				death:play()
 				die()
 			end
 		end
 		
 		for j in pairs(Asteroids) do
-			if isColliding(Astronaut, .6, Asteroids[j], .75) then 
+			if isColliding(Astronaut, .6, Asteroids[j], .75) then
+				death:play() 
 				die()
 			end
 		end
 		
 		for k in pairs(Friends) do
 			if isColliding(Astronaut, .6, Friends[k], .6) then 
+				pickup:play()
 				collectFriend(Friends[k])
 			end
 		end
 		
 		for l in pairs(Fuel) do
 			if isColliding(Astronaut, .6, Fuel[l], 1) then
+				fuelpack:play()
 				collectFuel(Fuel[l])
 			end
 		end
@@ -435,7 +457,7 @@ end
 
 function love.draw()
   if menuScreen then
-  	music:play()
+  	menuMusic:play()
    	love.graphics.draw(background, 0, 0, 0, .6, .6)
     menu:draw(320, 250)
   end
@@ -445,8 +467,11 @@ function love.draw()
   end
 
   if startGame then
-  	love.audio.stop(music)
-  	love.audio.stop(sound)
+  	love.audio.stop(menuMusic)
+  	love.audio.stop(menuSound)
+  	gameMusic:setVolume(0.25)
+  	gameMusic:setPitch(0.7)
+  	gameMusic:play()
   	love.graphics.draw(background, 0, 0, 0, .6, .6)
   	love.graphics.draw(FuelGauge.image, Fuel.x, Fuel.y)
   	love.graphics.draw(Astronaut.image, Astronaut.x, Astronaut.y,astronautR,.6,.6)

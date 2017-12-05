@@ -1,4 +1,4 @@
-sound = love.audio.newSource("sounds/menuSelect.wav", "static")
+menuSound = love.audio.newSource("sounds/menuSelect.wav", "static")
 return {
 	new = function()
 		return {
@@ -30,21 +30,21 @@ return {
 			keypressed = function(self, key)
 				if key == 'up' then
 					if self.selected > 1 then
-						sound:play()
+						menuSound:play()
 						self.selected = self.selected - 1
 						self.animOffset = self.animOffset + 1
 					else
-						sound:play()
+						menuSound:play()
 						self.selected = #self.items
 						self.animOffset = self.animOffset - (#self.items-1)
 					end
 				elseif key == 'down' then
 					if self.selected < #self.items then
-						sound:play()
+						menuSound:play()
 						self.selected = self.selected + 1
 						self.animOffset = self.animOffset - 1
 					else
-						sound:play()
+						menuSound:play()
 						self.selected = 1
 						self.animOffset = self.animOffset + (#self.items-1)
 					end
