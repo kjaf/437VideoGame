@@ -270,21 +270,23 @@ function love.load()
     	asteroid.y = asteroid.y + dy 
     end
 	
+	function hide(sprite)
+		sprite.x = 10000
+		sprite.y = 10000
+	end
+	
 	function die()
-	  Astronaut.x = 5000
-	  Astronaut.y = 5000
+	  hide(Astronaut)
 	  FuelGauge.amount = 0
 	end
 	
 	function collectFuel(fuel)
-		fuel.x = 5000
-		fuel.y = 5000
+		hide(fuel)
 		FuelGauge.amount = 100
 	end
 	
 	function collectFriend(friend)
-		friend.x = 5000
-		friend.y = 5000
+		hide(friend)
 		saved = saved + 1
 	end
 	
@@ -357,8 +359,7 @@ function love.load()
 		
 		if isColliding(Astronaut, .6, Ship, 1) then
 			text = "VICTORY"
-			Astronaut.x = 5000
-			Astronaut.y = 5000
+			hide(Astronaut)
 			FuelGauge.amount = 0
 		end
 		
