@@ -80,13 +80,23 @@ function love.load()
 
 	function createPlanets(numPlanets)
 		for i = 1, numPlanets do
+			local mass = love.math.random(500,2000)
 			Planets[i] = {}
 			Planets[i].image = love.graphics.newImage("/images/planets/planet" .. love.math.random(1, 3) .. ".png")
 			Planets[i].width = Planets[i].image:getWidth()
 			Planets[i].height = Planets[i].image:getHeight()
 			Planets[i].x = love.math.random(100, love.graphics.getWidth() - 200)
 			Planets[i].y = love.math.random(100, love.graphics.getHeight() - 200)
-			Planets[i].mass = 2000
+			Planets[i].mass = mass
+			if(mass < 1000) then
+				Planets[i].scale = 2
+			end
+			if(mass >1000 and mass <1500) then
+				Planets[i].scale = 2.5
+			end
+			if(mass > 1500) then
+				Planets[i].scale = 3
+			end
 		end
 		
 		return Planets
@@ -447,7 +457,7 @@ function love.draw()
   	end
   		
   	for j in pairs(Planets) do
-  		love.graphics.draw(Planets[j].image, Planets[j].x, Planets[j].y,0,2.5,2.5)
+  		love.graphics.draw(Planets[j].image, Planets[j].x, Planets[j].y,0,Planets[j].scale,Planets[j].scale)
   	end
 	
 	for k in pairs(Friends) do
