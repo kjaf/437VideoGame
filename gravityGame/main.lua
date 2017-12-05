@@ -11,7 +11,6 @@ function love.load()
   	pickup = love.audio.newSource("sounds/pickup.wav")
   	ship = love.audio.newSource("sounds/ship.mp3")
   	death = love.audio.newSource("sounds/death.wav")
-  	victory = love.audio.newSource("sounds/victory.wav")
 	background = love.graphics.newImage("images/space.png")
 	background = love.graphics.newImage("images/space.png")
 	Asteroids = {}
@@ -23,13 +22,10 @@ function love.load()
     level = 1
 	saved = 0
     force = 0 
-    gravityConstant = .3
+    gravityConstant = .225
 	angle = 0
     speed = 2
     astronautR = 0
-    text = "nothing"
-    text1 = "nothing"
-
     instructions = "Welcome to Gravity!\nYou're an astronaut who has been stranded in space!!\nYou must get back to your ship using a limited amount of fuel.\nUse the planet's orbits to help get you back to your ship!\nAlong the way, be sure to pick up your fellow astronauts!"
 
     --MENU--
@@ -53,22 +49,7 @@ function love.load()
           		love.event.push('quit')
         	end
       	}
-    --MENU--
-
-    --MENU KEY PRESS--
-    function love.keypressed(key)
-    	menu:keypressed(key)
-    end
-    --MENU KEY PRESS--
-
-    function love.keyreleased(key)
-     	if key == "space" then
-     		love.audio.stop(jetpackNoise)
-        	Astronaut.image = love.graphics.newImage("/images/player/astronaut.png")
-      	end
-    end
-
-
+		
     love.window.setMode(800,600)
     love.window.setTitle('Gravity')
 	
@@ -95,8 +76,8 @@ function love.load()
 			Planets[i].image = love.graphics.newImage("/images/planets/planet" .. love.math.random(1, 3) .. ".png")
 			Planets[i].width = Planets[i].image:getWidth()
 			Planets[i].height = Planets[i].image:getHeight()
-			Planets[i].x = love.math.random(100, love.graphics.getWidth() - 200)
-			Planets[i].y = love.math.random(100, love.graphics.getHeight() - 200)
+			--Planets[i].x = love.math.random(100, love.graphics.getWidth() - 200)
+			--Planets[i].y = love.math.random(100, love.graphics.getHeight() - 200)
 			Planets[i].mass = mass
 			if(mass < 1000) then
 				Planets[i].scale = 2
@@ -124,6 +105,7 @@ function love.load()
 				Asteroids[j].mass = 1000
 				Asteroids[j].angle = 0
 				Asteroids[j].radius = 2
+				Asteroids[j].speed = love.math.random(1, 6) / 100
 			end
 		end
 		return Asteroids
@@ -147,8 +129,8 @@ function love.load()
 			Friends[i].image = love.graphics.newImage("/images/player/astronaut2.png")
 			Friends[i].width = Friends[i].image:getWidth()
 			Friends[i].height = Friends[i].image:getHeight()
-			Friends[i].x = love.math.random(100, love.graphics.getWidth() - 100)
-			Friends[i].y = love.math.random(100, love.graphics.getHeight() - 100)
+			Friends[i].x = love.math.random(25, love.graphics.getWidth() - 25)
+			Friends[i].y = love.math.random(25, love.graphics.getHeight() - 25)
 			Friends[i].mass = 1
 		end
 		return Friends
@@ -160,9 +142,8 @@ function love.load()
 			Fuel[i].image = love.graphics.newImage("/images/player/fuel.png")
 			Fuel[i].width = Fuel[i].image:getWidth()
 			Fuel[i].height = Fuel[i].image:getHeight()
-			Fuel[i].x = love.math.random(100, love.graphics.getWidth() - 100)
-			text = Fuel[i].x
-			Fuel[i].y = love.math.random(100, love.graphics.getHeight() - 100)
+			Fuel[i].x = love.math.random(25, love.graphics.getWidth() - 25)
+			Fuel[i].y = love.math.random(25, love.graphics.getHeight() - 25)
 			Fuel[i].mass = 1
 		end
 		return Fuel
@@ -176,86 +157,66 @@ function love.load()
 		FuelGauge.amount = amount
 		return FuelGauge
 	end
-		
+	
+	-- CREATE OBJECTS --
 	Astronaut = createAstronaut()
-	Planets = createPlanets(2)
-	Asteroids = createAsteroids(Planets, 2)
-	Friends = createFriends(1)
+	Planets = createPlanets(3)
+	Planets[1].x = 500
+	Planets[1].y = 400
+	Planets[2].x = 500
+	Planets[2].y = 200
+	Planets[3].x = 200
+	Planets[3].y = 300
+	Asteroids = createAsteroids(Planets, 3)
+	Friends = createFriends(3)
 	FuelGauge = createFuelGauge(100)
-	Fuel = createFuel(1)
+	Fuel = createFuel(2)
 	Ship = createShip()
 	
-	
-
-
     function checkGravity(planet)
-
-      local dist = checkDistance(planet)
-      local dir = angleTo(planet)
-      local force = ((planet.mass * Astronaut.mass) / (dist * dist)) * gravityConstant
-      addVector(dir, force)
-      -- return force
-      -- Astronaut.x = Astronaut.x + math.cos(astronautR) * force
-      -- Astronaut.y = Astronaut.y + math.sin(astronautR) * force
+		local dist = checkDistance(planet)
+		local dir = angleTo(planet)
+		local force = ((planet.mass * Astronaut.mass) / (dist * dist)) * gravityConstant
+		addVector(dir, force)
 
     end
 
 
     function angleTo(Planets)
-      -- local diffx = Astronaut.x - Planets.x
-      -- local diffy = Astronaut.y - Planets.y
-     
-
-        
-      -- local radians = math.atan2(diffy,diffx)
-      -- local degrees = radians * 180 /math.pi
-    
-      -- text = radians
-      -- return degrees
-      return math.deg(math.atan2(Planets.y-Astronaut.y,Planets.x-Astronaut.x)) + 90
+		return math.deg(math.atan2(Planets.y-Astronaut.y,Planets.x-Astronaut.x)) + 90
     end
     
-
-
     function checkDistance(planet)
-      local dx = planet.x - Astronaut.x
-      local dy = planet.y - Astronaut.y
-      local distance =  math.sqrt(dx * dx + dy * dy)
-       -- local angle = angleTo(Planets[1])
-      return distance
+		local dx = planet.x - Astronaut.x
+		local dy = planet.y - Astronaut.y
+		local distance =  math.sqrt(dx * dx + dy * dy)
+		return distance
     end
 
 
     function addVector(degrees, thrust)
-      degrees = degrees - 90
-      angle = degrees * math.pi/180
-      newDX = thrust * math.cos(angle)
-      newDY = thrust * math.sin(angle)
+		degrees = degrees - 90
+		angle = degrees * math.pi/180
+		newDX = thrust * math.cos(angle)
+		newDY = thrust * math.sin(angle)
 
-      Astronaut.dx = Astronaut.dx + newDX
-      Astronaut.dy = Astronaut.dy + newDY
-
-      -- local x = Astronaut.x + (math.sin(math.rad(degrees)))
-      -- local y = Astronaut.y + (math.cos(math.rad(degrees)))
-
-      -- Astronaut.dx = Astronaut.dx + x 
-      -- Astronaut.dy = Astronaut.dy + y 
-      
-      calcSpeedAngle()
+		Astronaut.dx = Astronaut.dx + newDX
+		Astronaut.dy = Astronaut.dy + newDY
+		calcSpeedAngle()
     end 
 
     function calcSpeedAngle()
-      Astronaut.speed = math.sqrt((Astronaut.dx*Astronaut.dx) +(Astronaut.dy*Astronaut.dy))
-      Astronaut.moveAngle = math.atan2(Astronaut.dy, Astronaut.dx)
+		Astronaut.speed = math.sqrt((Astronaut.dx*Astronaut.dx) +(Astronaut.dy*Astronaut.dy))
+		Astronaut.moveAngle = math.atan2(Astronaut.dy, Astronaut.dx)
     end
 
     function astronautUpdate()
-      Astronaut.x = Astronaut.x + Astronaut.dx 
-      Astronaut.y = Astronaut.y + Astronaut.dy
+		Astronaut.x = Astronaut.x + Astronaut.dx 
+		Astronaut.y = Astronaut.y + Astronaut.dy
     end
 
     function asteroidUpdate(asteroid, planet, dt)
-    	asteroid.angle = asteroid.angle + .05 
+    	asteroid.angle = asteroid.angle + asteroid.speed
     	if asteroid.angle >= 360 then 
     		asteroid.angle = 0
     	end 
@@ -264,28 +225,6 @@ function love.load()
     	dy = asteroid.radius * math.deg(math.cos(asteroid.angle))
     	asteroid.x = planet.x + dx 
     	asteroid.y = planet.y + dy
-
-    	-- text = planet.x
-    	-- -- asteriod.angle = asteriod.angle + 90
-    	-- -- local angle = asteriod.angle * math.pi/180
-    	-- -- text = angle
-    	-- -- local newDX = math.cos(angle)
-    	-- -- local newDy = math.sin(angle)
-    	-- -- asteriod.x = asteriod.x + newDX    	
-    	-- -- asteriod.y = asteriod.y + newDY
-    	-- asteroid.angle = asteroid.angle + 20 * dt
-    	-- -- if asteroid.angle >= 360 then 
-    	-- -- 	asteroid.angle = 0
-    	-- -- end 
-    	-- local new_x = planet.x + math.deg(math.sin(angle)) 
-    	-- local new_y = planet.y + math.deg(math.cos(angle))
-
-    	-- asteroid.x = new_x 
-    	-- asteroid.y = new_y
-    	-- dx = asteroid.radius * math.deg(math.sin(asteroid.angle))
-    	-- dy = asteroid.radius * math.deg(math.cos(asteroid.angle))
-    	-- asteroid.x = asteroid.x +  dx 
-    	-- asteroid.y = asteroid.y + dy 
     end
 	
 	function hide(sprite)
@@ -327,6 +266,17 @@ function love.load()
 			checkFuel() 
 		end
 	end
+	
+	function love.keypressed(key)
+    	menu:keypressed(key)
+    end
+
+    function love.keyreleased(key)
+     	if key == "space" then
+     		love.audio.stop(jetpackNoise)
+        	Astronaut.image = love.graphics.newImage("/images/player/astronaut.png")
+      	end
+    end
 
 	
 	function isColliding(spriteA, scaleA, spriteB, scaleB)
@@ -351,7 +301,7 @@ function love.load()
 				
 	function checkCollisions()
 		for i in pairs(Planets) do
-			if isColliding(Astronaut, .6, Planets[i], 1.5) then
+			if isColliding(Astronaut, .6, Planets[i], 1.75) then
 				if level == 1 then
 					death:play()
 				end
@@ -383,7 +333,6 @@ function love.load()
 		end
 		
 		if isColliding(Astronaut, .6, Ship, 1) then
-			love.audio.stop(menuMusic)
 			level = 2
 			timer = 10
 			hide(Astronaut)
@@ -504,17 +453,12 @@ function love.draw()
 		for l in pairs(Fuel) do
 			love.graphics.draw(Fuel[l].image, Fuel[l].x, Fuel[l].y,0,1,1)
 		end
-	  	
-	    love.graphics.print(text, 300,300)
-	  	love.graphics.print(text1, 350, 350)
-	    love.graphics.print('Score: ', 670, 10, 0, 2, 2)
-	    love.graphics.print(intScore, 760, 10, 0, 2, 2)
+	    love.graphics.print('Score: ', 700, 10, 0, 1, 1)
+	    love.graphics.print(intScore, 750, 10, 0, 1, 1)
 	elseif level == 2 then
 		love.graphics.clear()
-		love.audio.stop(menuMusic)
 	  	love.audio.stop(menuSound)
 	  	love.audio.stop(gameMusic)
-	  	victory:play()
 		love.graphics.draw(background, 0, 0, 0, .6, .6)
 		love.graphics.print("Congrats you won!\nRestarting in 10 seconds", 320, 250)
 		love.graphics.print("Score: ", 320, 280)
