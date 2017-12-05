@@ -304,53 +304,53 @@ function love.load()
 			if FuelGauge.amount <= 100 and FuelGauge.amount > 90 then
 				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel100.png")
-				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
-				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed     
+				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed - Astronaut.dx
+				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed  - Astronaut.dy   
 			elseif FuelGauge.amount <= 90 and FuelGauge.amount > 80 then
 				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel90.png")
-				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
-				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed    
+				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed - Astronaut.dx
+				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed   - Astronaut.dy
 			elseif FuelGauge.amount <= 80 and FuelGauge.amount > 70 then
 				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel80.png")
-				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
-				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed    
+				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed - Astronaut.dx
+				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed   - Astronaut.dy
 			elseif FuelGauge.amount <= 70 and FuelGauge.amount > 60 then
 				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel70.png")
-				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
-				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed    
+				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed - Astronaut.dx 
+				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed  - Astronaut.dy  
 			elseif FuelGauge.amount <= 60 and FuelGauge.amount > 50 then
 				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel60.png")
-				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
-				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed       
+				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed - Astronaut.dx
+				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed  - Astronaut.dy     
 			elseif FuelGauge.amount <= 50 and FuelGauge.amount > 40 then
 				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel50.png")
-				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
-				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed       
+				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed - Astronaut.dx
+				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed -Astronaut.dy      
 			elseif FuelGauge.amount <= 40 and FuelGauge.amount > 30 then
 				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel40.png")
-				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
-				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed       
+				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed - Astronaut.dx
+				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed  - Astronaut.dy     
 			elseif FuelGauge.amount <= 30 and FuelGauge.amount > 20 then
 				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel30.png")
-				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
-				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed     
+				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed - Astronaut.dx
+				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed  - Astronaut.dy 
 			elseif FuelGauge.amount <= 20 and FuelGauge.amount > 10 then
 				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel20.png")
-				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
-				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed    
+				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed - Astronaut.dx
+				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed  - Astronaut.dy  
 			elseif FuelGauge.amount <= 10 and FuelGauge.amount > 0 then
 				jetpackNoise:play()
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel10.png")
-				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
-				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed      
+				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed - Astronaut.dx
+				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed  - Astronaut.dy    
 			elseif FuelGauge.amount <= 0 then   
 				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel0.png")
 				Astronaut.image =  love.graphics.newImage("/images/player/astronaut.png")
@@ -438,14 +438,15 @@ function love.update(dt)
   -- angle = angleTo(Planets[1])
 
   -- addVector(force, angle)
-if(love.keyboard.isDown("space") ~= true) then
+
 	for i in pairs(Planets) do 
   		checkGravity(Planets[i])
  	end
+ 	
+
  	if(startGame) then
   		astronautUpdate()
   	end
-end
 
 
 for i in pairs(Asteroids) do 
