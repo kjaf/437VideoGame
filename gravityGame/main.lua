@@ -1,10 +1,8 @@
 
 function love.load()
 	background = love.graphics.newImage("images/space.png")
-    Astronaut = {}
 	Asteroids = {}
     Planets = {}
-    Fuel = {}
     score = 60
     force = 0 
 
@@ -13,13 +11,6 @@ function love.load()
     astronautR = 0
     text = "nothing"
     text1 = "nothing"
-
-    --can change starting fuel amount here
-    Fuel.image =  love.graphics.newImage("/images/HUD/fuel100.png")
-    Fuel.x = 50
-    Fuel.y = 500
-    Fuel.amount = 100
-
 
     function love.keyreleased(key)
       if key == "space" then
@@ -49,11 +40,11 @@ function love.load()
 	function createPlanets(numPlanets)
 		for i = 1, numPlanets do
 			Planets[i] = {}
-			Planets[i].image = love.graphics.newImage("/images/planets/planet" .. love.math.random(1, 3) .. ".png")
+			Planets[i].image = love.graphics.newImage("/images/planets/planet" .. math.random(1, 3) .. ".png")
 			Planets[i].width = Planets[i].image:getWidth()
 			Planets[i].height = Planets[i].image:getHeight()
-			Planets[i].x = love.math.random(100, love.graphics.getWidth() - 100)
-			Planets[i].y = love.math.random(100, love.graphics.getHeight() - 100)
+			Planets[i].x = math.random(100, love.graphics.getWidth() - 100)
+			Planets[i].y = math.random(100, love.graphics.getHeight() - 100)
 			Planets[i].mass = 2000
 		end
 		
@@ -64,20 +55,32 @@ function love.load()
 		for i in pairs(planets) do
 			for j = 1, love.math.random(1, maximum) do
 				Asteroids[j] = {}
-				Asteroids[j].image = love.graphics.newImage("/images/planets/asteroid" .. love.math.random(1, 3) .. ".png")
+				Asteroids[j].image = love.graphics.newImage("/images/planets/asteroid" .. math.random(1, 3) .. ".png")
 				Asteroids[j].width = Asteroids[j].image:getWidth()
 				Asteroids[j].height = Asteroids[j].image:getHeight()
-				Asteroids[j].x = Planets[i].x + love.math.random(-100, 100)
-				Asteroids[j].y = Planets[i].y + love.math.random(60, 100)
+				Asteroids[j].x = Planets[i].x + math.random(-100, 100)
+				Asteroids[j].y = Planets[i].y + math.random(60, 100)
 				Asteroids[j].mass = 1000
 			end
 		end
 		return Asteroids
 	end
 	
+	function createFuelGauge(amount)
+		Fuel = {}
+		Fuel.image =  love.graphics.newImage("/images/HUD/fuel100.png")
+		Fuel.x = 50
+		Fuel.y = 500
+		Fuel.amount = amount
+		return Fuel
+	end
+		
+	
 	Astronaut = createAstronaut()
-	Planets = createPlanets(1)
-	createAsteroids(Planets, 2)
+	Planets = createPlanets(2)
+	Asteroids = createAsteroids(Planets, 2)
+	Fuel = createFuelGauge(100)
+	
 
 
     function checkGravity(planet)
@@ -144,7 +147,7 @@ function love.load()
 	  Astronaut.y = 1000
 	end
 	
-	function checkKeys(dt)
+	function checkKeys()
 		if love.keyboard.isDown("right") then
 			astronautR = astronautR + .05
 		end
@@ -154,7 +157,7 @@ function love.load()
 		end
 
 		if (love.keyboard.isDown("space")) then 
-			Fuel.amount = Fuel.amount - dt
+			Fuel.amount = Fuel.amount - .25
 			Astronaut.image = love.graphics.newImage("/images/player/boosting.png")  
 			if Fuel.amount <= 100 and Fuel.amount > 90 then
 				Fuel.image = love.graphics.newImage("/images/HUD/fuel100.png")
@@ -205,19 +208,19 @@ function love.load()
 
 
 	function isColliding(spriteA, spriteB)
+		text = spriteA.x
+		text1 = spriteB.x
 		aLeft = spriteA.x
-		aRight = spriteA.x + spriteA.width
+		aRight = spriteA.x + spriteA.width * .6
 		aTop = spriteA.y
-		aBottom = spriteA.y + spriteA.height
+		aBottom = spriteA.y + spriteA.height * .6
 		bLeft = spriteB.x
-		bRight = spriteB.x + spriteB.width
+		bRight = spriteB.x + spriteB.width * 2
 		bTop = spriteB.y
-		bBottom = spriteB.y + spriteB.height
-		bX = spriteB.x + spriteB.width
-		bY = spriteB.y + spriteB.height
+		bBottom = spriteB.y + spriteB.height * 2
 		
 		collision = true
-		if aBottom > bTop or
+		if aBottom < bTop or
 			aTop > bBottom or
 			aRight < bLeft or
 			aLeft > bRight then
@@ -254,7 +257,7 @@ function love.update(dt)
   end
 
   checkCollisions()
-  checkKeys(dt)
+  checkKeys()
 
   -- force = checkGravity(Planets[1].mass)
   -- angle = angleTo(Planets[1])
@@ -281,6 +284,7 @@ function love.draw()
 	end
 	
     love.graphics.print(text, 300,300)
+	love.graphics.print(text1, 350, 350)
     love.graphics.print('Score: ', 670, 10, 0, 2, 2)
     love.graphics.print(intScore, 760, 10, 0, 2, 2)  
     
