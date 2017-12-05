@@ -13,6 +13,18 @@ function love.load()
 	angle = 0
     speed = 2
     astronautR = 0
+    ship = {}
+
+
+    function createShip()
+    	ship = {}
+    	
+    	ship.image = love.graphics.newImage("/images/player/ship.png")
+    	ship.x = math.random(600, love.graphics.getWidth()-100)
+    	ship.y = math.random(400, love.graphics.getHeight()-100)
+    	return ship
+
+    end
     
     text = "nothing"
     text1 = "nothing"
@@ -54,8 +66,8 @@ function love.load()
 		Astronaut.image =  love.graphics.newImage("/images/player/astronaut.png")
 		Astronaut.width = Astronaut.image:getWidth()
 		Astronaut.height = Astronaut.image:getHeight()
-		Astronaut.x = 100
-		Astronaut.y = 100
+		Astronaut.x = 10
+		Astronaut.y = 10
 		Astronaut.mass = 1
 		Astronaut.dx = 0
 		Astronaut.dy = 0 
@@ -71,8 +83,8 @@ function love.load()
 			Planets[i].image = love.graphics.newImage("/images/planets/planet" .. math.random(1, 3) .. ".png")
 			Planets[i].width = Planets[i].image:getWidth()
 			Planets[i].height = Planets[i].image:getHeight()
-			Planets[i].x = math.random(100, love.graphics.getWidth() - 100)
-			Planets[i].y = math.random(100, love.graphics.getHeight() - 100)
+			Planets[i].x = math.random(100, love.graphics.getWidth() - 200)
+			Planets[i].y = math.random(100, love.graphics.getHeight() - 200)
 			Planets[i].mass = 2000
 		end
 		
@@ -122,6 +134,10 @@ function love.load()
 	Planets = createPlanets(2)
 	Asteroids = createAsteroids(Planets, 2)
 	Fuel = createFuelGauge(100)
+	
+
+	ship = createShip()
+	
 	
 
 
@@ -369,7 +385,8 @@ function love.draw()
       love.graphics.print(text, 300,300)
   	love.graphics.print(text1, 350, 350)
       love.graphics.print('Score: ', 670, 10, 0, 2, 2)
-      love.graphics.print(intScore, 760, 10, 0, 2, 2)  
+      love.graphics.print(intScore, 760, 10, 0, 2, 2)
+      love.graphics.draw(ship.image, ship.x, ship.y)  
   end
     
     
