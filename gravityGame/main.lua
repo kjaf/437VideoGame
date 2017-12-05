@@ -391,10 +391,14 @@ if(love.keyboard.isDown("space") ~= true) then
 	for i in pairs(Planets) do 
   		checkGravity(Planets[i])
  	end
+
   	astronautUpdate()
 end
 
-asteroidUpdate(Asteroids[1], Planets[1])
+
+for i in pairs(Asteroids) do 
+	asteroidUpdate(Asteroids[i])
+end
    
 end
  
