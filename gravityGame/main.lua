@@ -100,7 +100,7 @@ function love.load()
 	
 	function createShip()
 		Ship = {}
-		Ship.image =  love.graphics.newImage("/images/player/astronaut.png")
+		Ship.image =  love.graphics.newImage("/images/player/ship.png")
 		Ship.width = Ship.image:getWidth()
 		Ship.height = Ship.image:getHeight()
 		Ship.x = math.random(600, love.graphics.getWidth()-100)
