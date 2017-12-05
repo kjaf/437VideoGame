@@ -7,25 +7,15 @@ function love.load()
 	background = love.graphics.newImage("images/space.png")
 	Asteroids = {}
     Planets = {}
+	Friends = {}
+	Fuel = {}
     score = 60
+	saved = 0
     force = 0 
     gravityConstant = .3
 	angle = 0
     speed = 2
     astronautR = 0
-    ship = {}
-
-
-    function createShip()
-    	ship = {}
-    	
-    	ship.image = love.graphics.newImage("/images/player/ship.png")
-    	ship.x = math.random(600, love.graphics.getWidth()-100)
-    	ship.y = math.random(400, love.graphics.getHeight()-100)
-    	return ship
-
-    end
-    
     text = "nothing"
     text1 = "nothing"
 
@@ -108,35 +98,61 @@ function love.load()
 		return Asteroids
 	end
 	
-	function createFuelGauge(amount)
-		Fuel = {}
-		Fuel.image =  love.graphics.newImage("/images/HUD/fuel100.png")
-		Fuel.x = 50
-		Fuel.y = 500
-		Fuel.amount = amount
-		return Fuel
+	function createShip()
+		Ship = {}
+		Ship.image =  love.graphics.newImage("/images/player/astronaut.png")
+		Ship.width = Ship.image:getWidth()
+		Ship.height = Ship.image:getHeight()
+		Ship.x = math.random(600, love.graphics.getWidth()-100)
+    	Ship.y = math.random(400, love.graphics.getHeight()-100)
+		Ship.mass = 1
+		Ship.speed = 0
+		return Ship
 	end
 	
-	function createParticles()
-		for i = 1, 10 do
-			Particles[i] = {}
-			Particles[i].image = love.graphics.newImage("/images/player/bits.png")
-			Particles[i].x = Astronaut.x
-			Particles[i].y = Astronaut.y
-			Particles[i].dx = -Astronaut.dx
-			Particles[i].dy = -Astronaut.dy
+	function createFriends(numFriends)
+		for i = 1, numFriends do
+			Friends[i] = {}
+			Friends[i].image = love.graphics.newImage("/images/player/astronaut2.png")
+			Friends[i].width = Friends[i].image:getWidth()
+			Friends[i].height = Friends[i].image:getHeight()
+			Friends[i].x = math.random(100, love.graphics.getWidth() - 100)
+			Friends[i].y = math.random(100, love.graphics.getHeight() - 100)
+			Friends[i].mass = 1
 		end
-		return Particles
+		return Friends
+	end
+	
+	function createFuel(numFuel)
+		for i = 1, numFuel do
+			Fuel[i] = {}
+			Fuel[i].image = love.graphics.newImage("/images/player/fuel.png")
+			Fuel[i].width = Fuel[i].image:getWidth()
+			Fuel[i].height = Fuel[i].image:getHeight()
+			Fuel[i].x = math.random(100, love.graphics.getWidth() - 100)
+			text = Fuel[i].x
+			Fuel[i].y = math.random(100, love.graphics.getHeight() - 100)
+			Fuel[i].mass = 1
+		end
+		return Fuel
+	end	
+	
+	function createFuelGauge(amount)
+		FuelGauge = {}
+		FuelGauge.image =  love.graphics.newImage("/images/HUD/fuel100.png")
+		FuelGauge.x = 50
+		FuelGauge.y = 500
+		FuelGauge.amount = amount
+		return FuelGauge
 	end
 		
-	
 	Astronaut = createAstronaut()
 	Planets = createPlanets(2)
 	Asteroids = createAsteroids(Planets, 2)
-	Fuel = createFuelGauge(100)
-	
-
-	ship = createShip()
+	Friends = createFriends(1)
+	FuelGauge = createFuelGauge(100)
+	Fuel = createFuel(1)
+	Ship = createShip()
 	
 	
 
@@ -207,7 +223,7 @@ function love.load()
       Astronaut.y = Astronaut.y + Astronaut.dy
     end
 
-    function asteroidUpdate(asteriod, planet)
+    function asteroidUpdate(asteroid, planet)
     	-- asteriod.angle = asteriod.angle + 90
     	-- local angle = asteriod.angle * math.pi/180
     	-- text = angle
@@ -215,25 +231,33 @@ function love.load()
     	-- local newDy = math.sin(angle)
     	-- asteriod.x = asteriod.x + newDX    	
     	-- asteriod.y = asteriod.y + newDY
-    	asteriod.angle = asteriod.angle + .05
-    	if asteriod.angle >= 360 then 
-    		asteriod.angle = 0
+    	asteroid.angle = asteroid.angle + .05
+    	if asteroid.angle >= 360 then 
+    		asteroid.angle = 0
     	end 
     	
-    	dx = asteriod.radius * math.deg(math.sin(asteriod.angle))
-    	dy = asteriod.radius * math.deg(math.cos(asteriod.angle))
-    	asteriod.x = asteriod.x +  dx 
-    	asteriod.y = asteriod.y + dy 
+    	dx = asteroid.radius * math.deg(math.sin(asteroid.angle))
+    	dy = asteroid.radius * math.deg(math.cos(asteroid.angle))
+    	asteroid.x = asteroid.x +  dx 
+    	asteroid.y = asteroid.y + dy 
     end
 	
 	function die()
 	  Astronaut.x = 1000
 	  Astronaut.y = 1000
-	  Particles = {}
-	  Particles = createParticles()
-	  for k in pairs(Particles) do
-	     love.graphics.draw(Particles[k].image, Particles[k].x, Particles[k].y, 0, 1, 1)
-      end
+	  FuelGauge.amount = 0
+	end
+	
+	function collectFuel(fuel)
+		fuel.x = 1000
+		fuel.y = 1000
+		FuelGauge.amount = 100
+	end
+	
+	function collectFriend(friend)
+		friend.x = 1000
+		friend.y = 1000
+		saved = saved + 1
 	end
 	
 	function checkKeys()
@@ -246,50 +270,50 @@ function love.load()
 		end
 
 		if (love.keyboard.isDown("space")) then 
-			Fuel.amount = Fuel.amount - .25
+			FuelGauge.amount = FuelGauge.amount - .25
 			Astronaut.image = love.graphics.newImage("/images/player/boosting.png")  
-			if Fuel.amount <= 100 and Fuel.amount > 90 then
-				Fuel.image = love.graphics.newImage("/images/HUD/fuel100.png")
+			if FuelGauge.amount <= 100 and FuelGauge.amount > 90 then
+				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel100.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed     
-			elseif Fuel.amount <= 90 and Fuel.amount > 80 then
-				Fuel.image = love.graphics.newImage("/images/HUD/fuel90.png")
+			elseif FuelGauge.amount <= 90 and FuelGauge.amount > 80 then
+				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel90.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed    
-			elseif Fuel.amount <= 80 and Fuel.amount > 70 then
-				Fuel.image = love.graphics.newImage("/images/HUD/fuel80.png")
+			elseif FuelGauge.amount <= 80 and FuelGauge.amount > 70 then
+				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel80.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed    
-			elseif Fuel.amount <= 70 and Fuel.amount > 60 then
-				Fuel.image = love.graphics.newImage("/images/HUD/fuel70.png")
+			elseif FuelGauge.amount <= 70 and FuelGauge.amount > 60 then
+				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel70.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed    
-			elseif Fuel.amount <= 60 and Fuel.amount > 50 then
-				Fuel.image = love.graphics.newImage("/images/HUD/fuel60.png")
+			elseif FuelGauge.amount <= 60 and FuelGauge.amount > 50 then
+				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel60.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed       
-			elseif Fuel.amount <= 50 and Fuel.amount > 40 then
-				Fuel.image = love.graphics.newImage("/images/HUD/fuel50.png")
+			elseif FuelGauge.amount <= 50 and FuelGauge.amount > 40 then
+				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel50.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed       
-			elseif Fuel.amount <= 40 and Fuel.amount > 30 then
-				Fuel.image = love.graphics.newImage("/images/HUD/fuel40.png")
+			elseif FuelGauge.amount <= 40 and FuelGauge.amount > 30 then
+				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel40.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed       
-			elseif Fuel.amount <= 30 and Fuel.amount > 20 then
-				Fuel.image = love.graphics.newImage("/images/HUD/fuel30.png")
+			elseif FuelGauge.amount <= 30 and FuelGauge.amount > 20 then
+				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel30.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed     
-			elseif Fuel.amount <= 20 and Fuel.amount > 10 then
-				Fuel.image = love.graphics.newImage("/images/HUD/fuel20.png")
+			elseif FuelGauge.amount <= 20 and FuelGauge.amount > 10 then
+				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel20.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed    
-			elseif Fuel.amount <= 10 and Fuel.amount > 0 then
-				Fuel.image = love.graphics.newImage("/images/HUD/fuel10.png")
+			elseif FuelGauge.amount <= 10 and FuelGauge.amount > 0 then
+				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel10.png")
 				Astronaut.x = Astronaut.x + math.cos(astronautR) * speed
 				Astronaut.y = Astronaut.y + math.sin(astronautR) * speed      
-			elseif Fuel.amount <= 0 then   
-				Fuel.image = love.graphics.newImage("/images/HUD/fuel0.png")
+			elseif FuelGauge.amount <= 0 then   
+				FuelGauge.image = love.graphics.newImage("/images/HUD/fuel0.png")
 				Astronaut.image =  love.graphics.newImage("/images/player/astronaut.png")
 			end 
 		end
@@ -326,6 +350,18 @@ function love.load()
 		for j in pairs(Asteroids) do
 			if isColliding(Astronaut, .6, Asteroids[j], .75) then 
 				die()
+			end
+		end
+		
+		for k in pairs(Friends) do
+			if isColliding(Astronaut, .6, Friends[k], .6) then 
+				collectFriend(Friends[k])
+			end
+		end
+		
+		for l in pairs(Fuel) do
+			if isColliding(Astronaut, .6, Fuel[l], 1) then
+				collectFuel(Fuel[l])
 			end
 		end
 	end
@@ -371,8 +407,9 @@ function love.draw()
 
   if startGame then
   	love.graphics.draw(background, 0, 0, 0, .6, .6)
-  	love.graphics.draw(Fuel.image, Fuel.x, Fuel.y)
+  	love.graphics.draw(FuelGauge.image, Fuel.x, Fuel.y)
   	love.graphics.draw(Astronaut.image, Astronaut.x, Astronaut.y,astronautR,.6,.6)
+	love.graphics.draw(Ship.image, Ship.x, Ship.y)  
   	
   	for i in pairs(Asteroids) do
   		love.graphics.draw(Asteroids[i].image, Asteroids[i].x, Asteroids[i].y,0,.75,.75)
@@ -381,12 +418,20 @@ function love.draw()
   	for j in pairs(Planets) do
   		love.graphics.draw(Planets[j].image, Planets[j].x, Planets[j].y,0,2.5,2.5)
   	end
+	
+	for k in pairs(Friends) do
+		love.graphics.draw(Friends[k].image, Friends[k].x, Friends[k].y,0,.6,.6)
+	end
+	
+	for l in pairs(Fuel) do
+		love.graphics.draw(Fuel[l].image, Fuel[l].x, Fuel[l].y,0,1,1)
+	end
   	
-      love.graphics.print(text, 300,300)
+    love.graphics.print(text, 300,300)
   	love.graphics.print(text1, 350, 350)
-      love.graphics.print('Score: ', 670, 10, 0, 2, 2)
-      love.graphics.print(intScore, 760, 10, 0, 2, 2)
-      love.graphics.draw(ship.image, ship.x, ship.y)  
+    love.graphics.print('Score: ', 670, 10, 0, 2, 2)
+    love.graphics.print(intScore, 760, 10, 0, 2, 2)
+
   end
     
     
